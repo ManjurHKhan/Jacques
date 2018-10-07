@@ -15,7 +15,7 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 
 time.sleep(0.1)
 
-def getLargestContour(drawing):
+def getDrawingContour(drawing):
     _,contours, hierarchy = cv2.findContours(drawing, cv2.RETR_EXTERNAL, \
             cv2.CHAIN_APPROX_SIMPLE)
     # Get largest contour (by arc length)
@@ -52,7 +52,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", \
     image = image[crop_y:res_y-crop_y, crop_lx:res_x-crop_rx]
     thresh = getDrawing(image)
     thresh = close(thresh)
-    contour = getLargestContour(thresh)
+    contour = getDrawingContour(thresh)
     print(contour.shape)
     resized = cv2.resize(thresh, (640, 480))
     crop_y = 50
