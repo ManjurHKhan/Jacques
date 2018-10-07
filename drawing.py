@@ -16,13 +16,14 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
 
 def getLargestContour(drawing):
-    _,contours, hierarchy = cv2.findContours(drawing, cv2.RETR_TREE, \
+    _,contours, hierarchy = cv2.findContours(drawing, cv2.RETR_EXTERNAL, \
             cv2.CHAIN_APPROX_SIMPLE)
     # Get largest contour (by arc length)
     maxIndex = 0
     maxLength = 0
     for i in range(len(contours)):
-        arcLength = cv2.arcLength(contours[i], True)
+        #arcLength = cv2.arcLength(contours[i], True)
+        arcLength = cv2.contourArea(contours[i])
         if arcLength > maxLength:
             maxLength = arcLength
             maxIndex = i
@@ -58,7 +59,4 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", \
     break
 
 print(contour)
-from matplotlib import pyplot as plt
-
-x, y = contour.T
-plt.scatter(x, y)
+cv2.waitKey(0)
