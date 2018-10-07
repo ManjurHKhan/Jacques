@@ -43,7 +43,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", \
         use_video_port=True):
     image = frame.array
     image = image[400:480]
-    image = close(image)
     contour = getLargestContour(image)
     moment = cv2.moments(contour)
     if (moment["m00"] != 0):

@@ -32,6 +32,10 @@ def getLargestContour(drawing):
 def drawContour(img, contour, color, thickness=8):
     cv2.drawContours(img, [contour], -1, color, thickness)
 
+def close(img):
+    kernel = np.ones((5, 5), np.uint8)
+    return cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+
 def getDrawing(input):
     gray = cv2.cvtColor(input, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (3, 3), 0)
@@ -47,6 +51,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", \
     crop_rx = 120
     image = image[crop_y:res_y-crop_y, crop_lx:res_x-crop_rx]
     thresh = getDrawing(image)
+    thresh = close(thresh)
     contour = getLargestContour(thresh)
     print(contour.shape)
     resized = cv2.resize(thresh, (640, 480))
