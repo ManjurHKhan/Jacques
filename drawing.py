@@ -5,13 +5,13 @@ import cv2
 import numpy as np
 class DrawingExtractor:
 
-    def __init__(self):
-        self.camera = PiCamera()
+    def __init__(self, camera):
+        self.camera = camera
         res_x = 1280
         res_y = 1280
         self.camera.resolution = (res_x, res_y)
-        self.camera.hflip = True
-        self.camera.vflip = True
+        self.camera.hflip = False
+        self.camera.vflip = False
         self.camera.saturation = 0
         self.camera.brightness = 60
         self.camera.contrast = 0 # default
@@ -47,7 +47,7 @@ class DrawingExtractor:
         return thresh
 
 
-    def extract_drawing(self):
+    def extract(self, output_res):
         time.sleep(0.1)
         self.camera.capture(self.rawCapture, format="bgr")
         image = self.rawCapture.array
@@ -63,31 +63,33 @@ class DrawingExtractor:
         thresh = self.close(thresh)
         contour = self.getDrawingContour(thresh)
 
-        for pt in contour:
-            print(pt)
-            cv2.circle(image, (pt[0][0] + (crop_lx), \
-                    pt[0][1] + crop_ty), 3, (0, 0, 255))
-        cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-        cv2.namedWindow("thresh", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("image", (500, 500))
-        cv2.resizeWindow("thresh", (500, 500))
+        #for pt in contour:
+        #    print(pt)
+        #    cv2.circle(image, (pt[0][0] + (crop_lx), \
+        #            pt[0][1] + crop_ty), 3, (0, 0, 255))
+        #cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+        #cv2.namedWindow("thresh", cv2.WINDOW_NORMAL)
+        #cv2.resizeWindow("image", (500, 500))
+        #cv2.resizeWindow("thresh", (500, 500))
         # lower res test
-        self.camera.resolution = (self.camera.resolution[0]/2, self.camera.resolution[1]/2)
-        rawCaptureLow = PiRGBArray(self.camera, size=(res_x/2, res_y/2))
-        rawCaptureLow.truncate(0)
-        self.camera.capture(rawCaptureLow, format="bgr")
-        low_res_img = rawCaptureLow.array
+        #self.camera.resolution = (self.camera.resolution[0]/2, self.camera.resolution[1]/2)
+        #rawCaptureLow = PiRGBArray(self.camera, size=(res_x/2, res_y/2))
+        #rawCaptureLow.truncate(0)
+        #self.camera.capture(rawCaptureLow, format="bgr")
+        #low_res_img = rawCaptureLow.array
+        #for pt in contour:
+        #    print(pt)
+            #cv2.circle(low_res_img, ((pt[0][0] + (crop_lx))/2, \
+        #            (pt[0][1] + crop_ty)/2), 3, (0, 0, 255))
+        #cv2.imshow("image", image)
+        #cv2.imshow("low_res", low_res_img)
+        #cv2.imshow("thresh", thresh)
+
+        #print(contour.shape)
+        #cv2.waitKey(0)
+        coords = []
         for pt in contour:
-            print(pt)
-            cv2.circle(low_res_img, ((pt[0][0] + (crop_lx))/2, \
-                    (pt[0][1] + crop_ty)/2), 3, (0, 0, 255))
-        cv2.imshow("image", image)
-        cv2.imshow("low_res", low_res_img)
-        cv2.imshow("thresh", thresh)
-
-        print(contour.shape)
-        cv2.waitKey(0)
-
-
-extractor = DrawingExtractor()
-extractor.extract_drawing()
+            scaled_pt_x = ((pt[0][0] + crop_lx) / (res_x / output_res[0]))
+            scaled_pt_y = ((pt[0][1] + crop_ty) / (res_y / output_res[1]))
+            coords.append((scaled_pt_x, scaled_pt_y))
+        return coords

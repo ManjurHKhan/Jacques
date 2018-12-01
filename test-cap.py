@@ -1,5 +1,5 @@
 import picamera
 camera = picamera.PiCamera()
-camera.hflip = True
-camera.vflip = True
+camera.hflip = False
+camera.vflip = False
 camera.capture("test.jpg")

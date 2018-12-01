@@ -27,6 +27,11 @@ def list_linspace(a, num):
             new_a[(i * num) + j] = r[j]
     return new_a
 
+def scaled_linspace(a, num):
+    a = [i * num for i in a]
+    return list_linspace(a, num)
+
+
 f = open("test.out", "r")
 x = []
 y = []
@@ -37,6 +42,10 @@ for line in f:
     y.append(int(tokens[1]))
 
 
+
+num = 1
+x = scaled_linspace(x[:-1], num)
+y = scaled_linspace(y[:-1], num)
 # Flip coordinates.
 max_y = max(y)
 y = [i - max_y for i in y]
@@ -44,10 +53,6 @@ y = [-i for i in y]
 r_pos = (x[-1], y[-1])
 x = x[:-1]
 y = y[:-1]
-
-#num = 200
-#x_new = list_linspace(x, num)
-#y_new = list_linspace(y, num)
 #tck, u = interpolate.splprep([x, y], u=None, s=0, per=1)
 #u_new = np.linspace(u.min(), u.max(), 100000)
 #new_pts = interpolate.splev(u_new, tck, der=0)
