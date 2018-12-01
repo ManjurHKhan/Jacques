@@ -5,13 +5,13 @@ import cv2
 import numpy as np
 
 camera = PiCamera()
+res_x = 640
 res_y = 640
-res_x = 480
-camera.resolution = (640,480)
-camera.framerate = 15
+camera.resolution = (res_x,res_y)
+camera.framerate = 30
 camera.hflip = True
 camera.vflip = True
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(res_x, res_y))
 
 time.sleep(0.1)
 
@@ -43,9 +43,9 @@ def close(img):
 for frame in camera.capture_continuous(rawCapture, format="bgr", \
         use_video_port=True):
     image = frame.array
-    crop_y = 25
-    crop_lx = 70
-    crop_rx = 10
+    crop_y = 0
+    crop_lx = 30
+    crop_rx = 70
     image = image[crop_y:res_y-crop_y, crop_lx:res_x-crop_rx]
     image = close(image)
     contour = getLargestContour(image)
@@ -68,7 +68,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", \
     cv2.circle(image, (cx, cy), 4, (255, 255, 0), 2)
     drawContour(image, contour, (0, 0, 255), 4)
     cv2.line(image, (cx, cy), (width/2, height), (0, 255, 0), 4)
-    cv2.imshow("Frame", image)
+    cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("frame", (500, 500))
+    cv2.imshow("frame", image)
     key = cv2.waitKey(1) & 0xFF
 
     # Clear the stream for the next frame.
