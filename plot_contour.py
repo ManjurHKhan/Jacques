@@ -38,9 +38,7 @@ for line in f:
 
 
 # Flip coordinates.
-max_y = max(y)
-y = [i - max_y for i in y]
-y = [-i for i in y]
+plt.gca().invert_yaxis()
 r_pos = (x[-1], y[-1])
 x = x[:-1]
 y = y[:-1]

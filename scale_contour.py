@@ -23,6 +23,8 @@ def list_linspace(a, num):
     for i in range(len(a) - 1):
         diff = a[i+1] - a[i]
         r = np.linspace(a[i], a[i+1], num)
+        if diff == 0:
+            print(r)
         for j in range(len(r)):
             new_a[(i * num) + j] = r[j]
     return new_a
@@ -43,21 +45,28 @@ for line in f:
 
 
 
-num = 1
-x = scaled_linspace(x[:-1], num)
-y = scaled_linspace(y[:-1], num)
+x_org = np.copy(x)
+y_org = np.copy(y)
+num = 2
 # Flip coordinates.
-max_y = max(y)
-y = [i - max_y for i in y]
-y = [-i for i in y]
+plt.gca().invert_yaxis()
+x = scaled_linspace(x, num)
+y = scaled_linspace(y, num)
 r_pos = (x[-1], y[-1])
-x = x[:-1]
-y = y[:-1]
+x_new = np.copy(x[:-1])
+y_new = np.copy(y[:-1])
+x_new[0] = r_pos[0]
+y_new[0] = r_pos[1]
+for i in range(1, len(x_new)):
+    x_new[i] = x_new[i-1] - (x[i-1] - x[i])
+    y_new[i] = y_new[i-1] - (y[i-1] - y[i])
 #tck, u = interpolate.splprep([x, y], u=None, s=0, per=1)
 #u_new = np.linspace(u.min(), u.max(), 100000)
 #new_pts = interpolate.splev(u_new, tck, der=0)
-plt.plot(x, y, 'r--')
+plt.plot(x_new, y_new, 'r--')
 plt.plot(r_pos[0], r_pos[1], 'bo')
-#plt.plot(new_pts[0], new_pts[1], 'b--')
-#print(len(new_pts[1]))
+plt.plot(x[0], y[0], 'go')
+plt.plot(x[:-1], y[:-1], 'b--')
+plt.plot(x_org[0], y_org[0], 'g*')
+plt.plot(x_org[:-1], y_org[:-1], 'b-')
 plt.show()
