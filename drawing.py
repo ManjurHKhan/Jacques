@@ -89,7 +89,9 @@ class DrawingExtractor:
         #cv2.waitKey(0)
         coords = []
         for pt in contour:
-            scaled_pt_x = ((pt[0][0] + crop_lx) / (res_x / output_res[0]))
-            scaled_pt_y = ((pt[0][1] + crop_ty) / (res_y / output_res[1]))
+            scale_x = res_x / output_res[0]
+            scale_y = res_y / output_res[1]
+            scaled_pt_x = ((pt[0][0] + crop_lx) / scale_x)
+            scaled_pt_y = ((pt[0][1] + crop_ty) / scale_y)
             coords.append((scaled_pt_x, scaled_pt_y))
         return coords

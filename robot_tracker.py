@@ -6,15 +6,8 @@ import numpy as np
 
 class RobotTracker:
 
-    def __init__(self, camera):
-        self.camera = camera
-        res_x = 1280
-        res_y = 1280
-        self.camera.resolution = (res_x,res_y)
-        self.camera.framerate = 30
-        self.camera.hflip = False
-        self.camera.vflip = False
-        self.rawCapture = PiRGBArray(self.camera, size=(res_x, res_y))
+    def __init__(self, (res_x, res_y)):
+        self.resolution = (res_x, res_y)
 
     def getLargestContour(self, input): 
         AMAZON_MIN = np.array([10, 50, 50], np.uint8)
@@ -41,18 +34,15 @@ class RobotTracker:
         kernel = np.ones((5, 5), np.uint8)
         return cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 
-    def track(self):
-        time.sleep(0.1)
-        
-        #for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", \
-         #       use_video_port=True):
-        self.camera.capture(self.rawCapture, format="bgr")
-        image = self.rawCapture.array
+    def track(self, image):
+        if image.shape[:-1] != self.resolution:
+            print("Wrong resolution to robot")
+            return -1;
         crop_y = 0
         crop_lx = 30
         crop_rx = 70
-        res_x = self.camera.resolution[0]
-        res_y = self.camera.resolution[1]
+        res_x = self.resolution[0]
+        res_y = self.resolution[1]
         image = image[crop_y:res_y-crop_y, crop_lx:res_x-crop_rx]
         image = self.close(image)
         contour = self.getLargestContour(image)
@@ -62,27 +52,17 @@ class RobotTracker:
             cy = int(moment["m01"]/moment["m00"]) + crop_y
         else:
             cx, cy = 0, 0
+        '''
         # Calculate angle.
         width = np.size(image, 0)
         height = np.size(image, 1)
-        #xDist = cx - width/2
-        #yDist = cy - height
-        #angle = np.arctan2(xDist, yDist) * (180 / np.pi)
-        #print("Angle: " + str(angle))
-        # + angle = left, - angle = right
-        
         # Draw stuff
         cv2.circle(image, (cx, cy), 4, (255, 255, 0), 2)
         self.drawContour(image, contour, (0, 0, 255), 4)
         cv2.line(image, (cx, cy), (width/2, height), (0, 255, 0), 4)
         cv2.imwrite("robot.jpg", image)
+        '''
         return (cx, cy)
-
-        # Clear the stream for the next frame.
-        #self.rawCapture.truncate(0)
-
-        #if key == ord("q"):
-        #    break
 #camera = PiCamera()
 #tracker = RobotTracker(camera)
 #tracker.track()
